@@ -111,12 +111,6 @@ end
 
 local function isgb2312(cand, env)
 	local ctext = cand.text
-
-	-- 〇 作为日期显示，不参加生僻字过滤
-	if string.find(ctext, "〇") then
-		return 1
-	end
-
 	if utf8.len(ctext) == 1 then
 		local spll_raw = env.spll_rvdb:lookup(ctext)
 		if spll_raw ~= '' then
@@ -135,6 +129,7 @@ local function isgb2312(cand, env)
 				if chars:find("GBK") then return 0 else flag=1 end
 			end
 		end
+
 		return flag
 	end
 end
@@ -246,10 +241,10 @@ local function filter(input, env)
 	local hide_pinyin=env.engine.context:get_option("new_hide_pinyin")
 	local schema_name=env.engine.schema.schema_name or ""
 	local schema_id=env.engine.schema.schema_id or ""
-	local spelling_states=env.engine.context:get_option(spelling_keyword)
+	local spelling_states=env.engine.context:get_option("new_spelling")
 	local composition = env.engine.context.composition
 	local segment = composition:back()
-	-- if codetext==rv_var.switch_keyword and schema_name then segment.prompt =" 〈 当前方案："..schema_name.." 〉" end
+	-- log.info("new_spelling: script_text=" .. script_text .. ", spelling_states=" .. tostring(spelling_states))
 	-- 获取输入法常用参数
 	-- env.engine.context:get_commit_text() -- filter中为获取提交词
 	-- env.engine.context:get_script_text()-- 获取编码带引导符
@@ -314,11 +309,12 @@ local function filter(input, env)
 						end
 						if cand.type == 'punct' then
 							add_comment = xform(code_comment:gsub('%[(.-),(.-),(.-),(.-)%]', '[%1'..' · '..'%2'..' · '..'%3]'))
-						elseif cand.type ~= 'sentence' then
+						else
 							add_comment = get_tricomment(cand, env)
 						end
 						if add_comment ~= '' then
-							if cand.comment=="" then cand.comment = add_comment .. cand.comment end
+							-- 无论cand.comment是否为空，都附加字根提示
+							cand.comment = add_comment .. cand.comment
 						end
 						yield(cand)
 					end
@@ -373,6 +369,18 @@ local function filter(input, env)
 					-- end
 					if cand.comment:find("(☯)") and script_text:find("^%`*(%l+%`%l+)") then
 						segment.prompt ="〈编码："..get_en_code(cand.text, env.spll_rvdb).. "〉"
+					end
+					-- 添加字根提示（拼音输入时也要显示）
+					local add_comment = ''
+					if cand.type ~= 'sentence' then
+						add_comment = get_tricomment(cand, env)
+					end
+					if add_comment ~= '' then
+						if cand.comment == "" then
+							cand.comment = add_comment
+						else
+							cand.comment = add_comment:gsub("〉"," · ") .. cand.comment .. " 〉"
+						end
 					end
 					yield(cand)
 				end

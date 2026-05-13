@@ -1,11 +1,11 @@
 description:
-  color_name: default
-  display_name: 默认
+  color_name: luna
+  display_name: 明月／Luna
   create_time: 2024-04-26 14:15:16
   update_time: 2024-04-26 14:15:16
-  is_template: 
+  is_template: true
 style:
-  color_scheme: default
+  color_scheme: luna
   font_face: Microsoft YaHei
   label_font_face: Microsoft YaHei
   comment_font_face: 黑体字根
@@ -25,33 +25,31 @@ style:
   vertical_text_with_wrap: false
   layout:
     align_type: center
-    border_width: 2
-    candidate_spacing: 10
-    corner_radius: 10
-    hilite_padding: 6
-    hilite_spacing: 4
-    hilite_padding_x: 6
-    hilite_padding_y: 6 
-    margin_x: 8
-    margin_y: 8
-    max_height: 0
-    max_width: 0
+    max_width: 0	
+    min_width: 160
     min_height: 0
-    min_width: 0
-    round_corner: 10
-    shadow_offset_x: 2
-    shadow_offset_y: 2
-    shadow_radius: 0
+    max_height: 0	
+    border_width: 3
+    margin_x: 12
+    margin_y: 12
     spacing: 10
+    candidate_spacing: 5
+    hilite_spacing: 4
+    hilite_padding: 2
+    round_corner: 4  
+    corner_radius: 4
+    shadow_radius: 0
+    shadow_offset_x: 4
+    shadow_offset_y: 4
 
 preset_color_schemes:
-  default:
-    name: 默认
-    author: 中书君
+  luna:
+    name: 明月／Luna
+    author: 佛振 <chen.sst@gmail.com>
     text_color: 0x000000
     back_color: 0xffffff
-    border_color: 0x000000
+    border_color: 0xcccccc
     hilited_text_color: 0x000000
-    hilited_back_color: 0xdddddd
+    hilited_back_color: 0x7fffff
     hilited_candidate_text_color: 0xffffff
     hilited_candidate_back_color: 0x000000
