@@ -27,7 +27,7 @@ style:
   preedit_type: composition                       # 预编辑区显示内容 composition（编码）；preview（高亮候选）；preview_all（全部候选）
   # ...其他选项...
   label_format: "%s"                              # 标签字符号
-  mark_text: "❀"                                 # 候选项前的标记符号
+  mark_text: " "                                 # 候选项前的标记符号
   ascii_tip_follow_cursor: false                  # 切换 ASCII 模式时，提示跟随鼠标，而非输入光标
   enhanced_position: false                        # 无法定位候选框时，在窗口左上角显示候选框
   display_tray_icon: false                         # 托盘显示独立于语言栏的额外图标
