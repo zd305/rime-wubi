@@ -21,18 +21,32 @@ schema:
 
 switches:
   - name: show_es
-    reset: 0
-    states: [ 💀, 😄 ]
-  - name: ascii_mode
-    reset: 0
-    states: [ 中文, 西文 ]
+    # reset: 0
+    states: [ 💀, 😄 ]  
+  - name: zh_trad
+    # reset: 0
+    states: [ 简,繁 ]
+  - name: new_spelling
+    # reset: 1
+    states: [ 隐,显 ]
+  - name: new_hide_pinyin
+    # reset: 1
+    states: [ 音,哑 ]
+  - name: GB2312
+    # reset: 1
+    states: [ 扩,常 ]
+  - name: single_char
+    # reset: 0
+    states: [ 词,单 ]
   - name: full_shape
-    states: [ 半角, 全角 ]
-  - name: extended_charset
-    states: [ 常用, 增廣 ]
-  - name: ascii_punct
-    states: [ 。，, ．， ]
-    
+    # reset: 0
+    states: [ 半,全 ]
+  # - name: ascii_mode
+  #   reset: 0
+  #   states: [ 中,英 ]  
+  # - name: ascii_punct
+  #   reset: 0
+  #   states: [ 。，,．， ]    
 engine:
   processors:
     - ascii_composer
