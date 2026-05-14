@@ -123,12 +123,6 @@ reverse_lookup:
 punctuator:
   import_preset: default
 
-
-recognizer:
-  import_preset: default
-  patterns:
-    reverse_lookup: "`[a-z]*'?$"
-
 key_binder:
   import_preset: default #方案切换相关
   bindings:
@@ -173,7 +167,7 @@ recognizer:
     #uppercase: "[A-Z][-_+.'0-9A-Za-z]*$"
     uppercase: "" #中文状态大写锁定直接上屏
     reverse_lookup: "[a-z`]*`+[a-z`]*"
-    punct: ""
+    punct: "^/([0-9]0?|[A-Za-z]+)$"
 lua_reverse_db:
   spelling: wb_spelling
   code: wb_spelling
