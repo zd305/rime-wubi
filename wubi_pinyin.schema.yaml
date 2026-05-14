@@ -121,7 +121,7 @@ reverse_lookup:
     - xform/([nl])ue/$1üe/
     - xform/([jqxy])v/$1u/
 punctuator:
-  import_preset: default
+  import_preset: symbols
 
 key_binder:
   import_preset: default #方案切换相关
