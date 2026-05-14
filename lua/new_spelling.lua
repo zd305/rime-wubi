@@ -193,48 +193,6 @@ local function get_tricomment(cand, env)
 	return ''
 end
 
-local function file_exists(path)
-	local file = io.open(path, "rb")
-	if file then file:close() end
-	return file ~= nil
-end
-
-local function formatDir(path,filename)
-	if path:find("\\") then
-		return path .. "\\" .. filename
-	elseif path:find("/") then
-		return path .. "/" .. filename
-	else
-		return path .. "\\" .. filename
-	end
-end
-
-local function get_item(filepath,item)
-	local file = io.open(filepath, "rb")
-	if file then
-		local isexist=nil
-		for line in file:lines() do
-			if line:find(item) and not line:find("(%#)") then
-				isexist=line:gsub('(.-):%s*(.-)', '%2')
-			end
-		end
-		file:close()
-		return isexist
-	end
-end
-
-local function get_horizontal_style(filename,item)
-	local shared_data_dir=rime_api.get_shared_data_dir()         -- 获取程序目录data路径
-	local user_data_dir=rime_api.get_user_data_dir()         -- 获取用户目录路径
-	local flag=get_item(formatDir(user_data_dir,filename),item)
-	if flag~=nil then
-		return flag
-	else
-		flag=get_item(formatDir(user_data_dir,"weasel.custom.yaml"),item)
-		if flag~=nil then return flag else return get_item(formatDir(shared_data_dir,filename),item) end
-	end
-end
-
 local function filter(input, env)
 	local codetext=env.engine.context.input  -- 获取编码
 	local script_text=env.engine.context:get_script_text()
@@ -257,7 +215,6 @@ local function filter(input, env)
 	-- local rime_version=rime_api.get_rime_version()         -- 获取rime版本号--macos无效
 	-- local shared_data_dir=rime_api.get_shared_data_dir()         -- 获取程序目录data路径
 	-- local user_data_dir=rime_api.get_user_data_dir()         -- 获取用户目录路径
-	local horizontal=get_horizontal_style(schema_id..".custom.yaml","style/horizontal") or ""
 	CandidateText={}
 	if spelling_states then
 		for cand in input:iter() do
@@ -322,29 +279,11 @@ local function filter(input, env)
 			end
 		end
 	else
+		-- 「隐」：不附加拆分/字根注释（get_tricomment 与反查库格式化的 comment），保留上游候选原样
 		if script_text:find("^z") then
 			for cand in input:iter() do
 				if isgb2312(cand,env)==1 and env.engine.context:get_option("GB2312") or not env.engine.context:get_option("GB2312") then
 					table.insert(CandidateText,cand.text)
-					local add_comment=get_tricomment(cand, env)
-					local code_comment=env.code_rvdb:lookup(cand.text)
-					if cand.comment=="" then
-						if add_comment~=nil or add_comment~="" then
-							cand.comment = add_comment
-						end
-					elseif not horizontal:find("true") then
-						if add_comment~=nil or add_comment~="" then
-							if utf8.len(cand.text) == 1 and code_comment and not hide_pinyin then
-								cand.comment = xform(code_comment:gsub('%[(.-),(.-),(.-),(.-)%]', '[%1'..' · '..'%2'..' · '..'%3]'))
-							elseif utf8.len(cand.text) == 1 and code_comment and hide_pinyin then
-								cand.comment = xform(code_comment:gsub('%[(.-),(.-),(.-),(.-)%]', '[%1'..' · '..'%2]'))
-							else
-								cand.comment = add_comment:gsub("〉"," · ") .. cand.comment .. " 〉"
-							end
-						end
-					else
-						if cand.comment:find("%s") then cand.comment=" "..cand.comment:gsub("%s+"," · ") else cand.comment=" "..cand.comment end
-					end
 					yield(cand)
 				end
 			end
@@ -352,35 +291,15 @@ local function filter(input, env)
 			for cand in input:iter() do
 				if isgb2312(cand,env)==1 and env.engine.context:get_option("GB2312") or not env.engine.context:get_option("GB2312") then
 					table.insert(CandidateText,cand.text)
-					local code_comment=env.code_rvdb:lookup(cand.text)
-					if code_comment~="" then
-						code_comment=xform(code_comment:gsub('%[(.-),(.-),(.-),(.-)%]', '%3')):gsub("^%s+",""):gsub("%s+$","")
-						if code_comment:find("%s") then code_comment=code_comment:gsub("%s+"," · ") end
-						yield(Candidate("zhuyin_rvlk", cand.start, cand._end, cand.text," "..code_comment))
-					end
+					yield(cand)
 				end
 			end
 		else
 			for cand in input:iter() do
 				if isgb2312(cand,env)==1 and env.engine.context:get_option("GB2312") or not env.engine.context:get_option("GB2312") then
 					table.insert(CandidateText,cand.text)
-					-- if script_text==rv_var.switch_keyword then
-					-- 	if cand.text:find("方案") then cand.comment="〈 "..schema_name.." 〉" end
-					-- end
 					if cand.comment:find("(☯)") and script_text:find("^%`*(%l+%`%l+)") then
 						segment.prompt ="〈编码："..get_en_code(cand.text, env.spll_rvdb).. "〉"
-					end
-					-- 添加字根提示（拼音输入时也要显示）
-					local add_comment = ''
-					if cand.type ~= 'sentence' then
-						add_comment = get_tricomment(cand, env)
-					end
-					if add_comment ~= '' then
-						if cand.comment == "" then
-							cand.comment = add_comment
-						else
-							cand.comment = add_comment:gsub("〉"," · ") .. cand.comment .. " 〉"
-						end
 					end
 					yield(cand)
 				end
