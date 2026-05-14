@@ -18,6 +18,7 @@ schema:
     码表源自 ibus-table
   dependencies:
     - pinyin
+    - wb_spelling
 
 switches:
   - name: show_es
@@ -73,6 +74,7 @@ engine:
     - "lua_translator@calculator"
     - "lua_translator@helper"
   filters:
+    - lua_filter@new_spelling@spelling
     - simplifier@emoji_switch
     - simplifier
     - uniquifier
@@ -172,4 +174,8 @@ recognizer:
     uppercase: "" #中文状态大写锁定直接上屏
     reverse_lookup: "[a-z`]*`+[a-z`]*"
     punct: ""
+lua_reverse_db:
+  spelling: wb_spelling
+  code: wb_spelling
+
   
